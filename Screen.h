@@ -2,22 +2,10 @@
 
 #include "Board.h"
 
-typedef struct
-{
-  unsigned short x;
-  unsigned short y;
-} Position;
+void initScreen();
 
-typedef struct
-{
-  Position *positions;
-  unsigned short value;
-  unsigned short numOfDiff;
-} ScreenDiff;
+void refreshScreen();
 
-
-void refresh();
-
-void drawDiff( ScreenDiff diff );
+void drawDiff( Diff diff );
 
 #endif
