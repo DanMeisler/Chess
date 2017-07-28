@@ -1,10 +1,11 @@
 #include "Screen.h"
-
+#include "Board.h"
 
 int main()
 {
-  /* initBoard(); */
+  initBoard();
   initScreen();
-  refreshScreen();
+  endScreen();
+  printf( "Game Over\n" );
   return 0;
 }

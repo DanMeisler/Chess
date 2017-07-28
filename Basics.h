@@ -1,4 +1,5 @@
 #ifndef __BASICS_H__
+#define __BASICS_H__
 
 enum ChessTool{
   None,
