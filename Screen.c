@@ -1,43 +1,51 @@
 #include "Screen.h"
 #include "stdio.h"
 #include <stdlib.h>
-static void drawBoardSquare( unsigned short x, unsigned short y, unsigned short value )
+static void drawBoardSquare( unsigned short value, WINDOW *square )
 {
-  wmove( win, x, y + 1 );
+  chtype currentColor = getbkgd( square );
+  chtype newColor = COLOR_PAIR( value % 2 ?
+				( currentColor > 2 ? 3 : 1 ) :
+				( currentColor > 2 ? 4 : 2 )
+				);
+  printf("%ul",(unsigned int) newColor);
+  
   switch( value )
     {
     case None:
-      wprintw( win, " ");
+      wprintw( square, " ");
       break;
     case WhiteKing:
     case BlackKing:
-      wprintw( win, "K");
+      wprintw( square, "KKKK");
       break;
     case WhiteQueen:
     case BlackQueen:
-      wprintw( win, "Q");
+      wprintw( square, "Q");
       break;
       
     case WhiteSteeple:
     case BlackSteeple:
-      wprintw( win, "#");
+      wprintw( square, "#");
       break;
       
     case WhiteRunner:
     case BlackRunner:
-      wprintw( win, "R");
+      wprintw( square, "R");
       break;
       
     case WhiteHorse:
     case BlackHorse:
-      wprintw( win, "$");
+      wprintw( square, "$");
       break;
       
     case WhiteSolider:
     case BlackSolider:
-      wprintw( win, "!");
+      wprintw( square, "!");
       break;
     }
+  wbkgdset( square, newColor );
+  wrefresh( square );
 }
 
 
@@ -45,45 +53,45 @@ void initScreen()
 {
   initscr();
   start_color();
-  init_pair( 1, COLOR_YELLOW, COLOR_BLUE );
-  win = newwin(20, 20, 0, 0);
+  init_pair( 1, COLOR_WHITE, COLOR_GREEN );
+  init_pair( 2, COLOR_BLACK, COLOR_GREEN );
+  init_pair( 3, COLOR_WHITE, COLOR_YELLOW );  
+  init_pair( 4, COLOR_BLACK, COLOR_YELLOW );
+
+  ioWindow = newwin( 1, 0, LINES - 1, 0 );
+  wbkgd( ioWindow, COLOR_PAIR(1) );
+  wrefresh( ioWindow );
+  for( int i = 0; i < 8; ++i )
+    {
+          for( int j = 0; j < 8; ++j )
+  	    {
+  	      squareWindows[i][j] = newwin( SQUARE_SIZE, SQUARE_SIZE, i * SQUARE_SIZE, j * SQUARE_SIZE );
+  	      wbkgd( squareWindows[i][j], ( i + j ) % 2 ? COLOR_PAIR( 1 ) : COLOR_PAIR( 3 ) );
+  	      wrefresh( squareWindows[i][j] );
+  	    }
+    }
+
   refreshScreen();
-  wgetch( win );
+  wgetch( ioWindow );
 }
 
 
 void refreshScreen()
 {
-  werase( win );
-  char str[2];
-  for( int i = 1; i < 9; ++i )
-    {
-      
-      wmove( win, 8, i );
-      sprintf( str, "%d", i );
-      wprintw( win, str );
-    }
-  for( int i = 0; i < 8; ++i )
-    {
-      wmove( win, i, 0 );
-      sprintf( str, "%c", (8 - i) + 64 );
-      wprintw( win, str );
-    }
-  
   for( int i = 0; i < 8 ; ++i )
     {
       for( int j = 0 ; j < 8 ; ++j )
 	{
-	  drawBoardSquare( i, j, board[i][j] );
+	  drawBoardSquare( board[i][j], squareWindows[i][j] );
 	}
     }
-  wbkgd( win, COLOR_PAIR(1) );
-  wmove( win, 1, 0 );
-  wrefresh( win );
 }
 
 void endScreen()
 {
   endwin();
-  delwin( win );
+  for( int i = 0; i < 8; ++i )
+    for( int j = 0; j < 8; ++j )
+      delwin( squareWindows[i][j] );
+  delwin( ioWindow );
 }

@@ -5,7 +5,13 @@
 
 #include <ncurses.h>
 
-WINDOW *win;
+#define SQUARE_SIZE 2
+
+
+
+WINDOW *squareWindows[8][8];
+WINDOW *ioWindow;
+
 void initScreen();
 
 void refreshScreen();
